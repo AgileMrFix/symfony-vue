@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+    php-apache-environment:
+        container_name: php-apache
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        ports:
+            - "7171:80"
+        container_name: wikicollection
+        volumes:
+            - ./app:/var/www/html
+        depends_on:
+            - db
+    db:
+        container_name: db
+        image: mysql
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: symfony
+            MYSQL_USER: db-user
+            MYSQL_PASSWORD: db-password
+        ports:
+            - "9906:3306"
