@@ -1,4 +1,6 @@
-/.env
+#Not allowed for production
+##/.env
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
