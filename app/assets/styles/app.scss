@@ -1,0 +1,30 @@
+@import "~bootstrap/scss/bootstrap";
+@import "~bootstrap-icons";
+
+html,body,.main-container {
+  height: 100%;
+}
+
+.row.content{
+  min-height: 100%;
+}
+
+.sidenav {
+  background-color: #f1f1f1;
+  min-height: 100%;
+}
+
+th{
+  white-space: nowrap;
+}
+
+.active-cursor:hover{
+  cursor: pointer;
+}
+
+@media screen and (max-width: 767px) {
+  .sidenav {
+    height: auto;
+    padding: 15px;
+  }
+}

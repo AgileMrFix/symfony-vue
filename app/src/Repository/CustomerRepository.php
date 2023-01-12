@@ -44,7 +44,7 @@ class CustomerRepository extends ServiceEntityRepository
      * @param $value
      * @return QueryBuilder Returns an array of Customer objects
      */
-    public function findByAllColumns($search = null, $orders = []): array
+    public function findByAllColumns($search = null, $orders = [], $filters = []): array
     {
         $q = $this->createQueryBuilder('c')
             ->leftJoin('c.address', 'address')
@@ -53,21 +53,36 @@ class CustomerRepository extends ServiceEntityRepository
 
 
         if ($search)
-            $q->andWhere('c.email LIKE :val')
-                ->orWhere('c.first_name LIKE :val')
-                ->orWhere('c.last_name LIKE :val')
-                ->orWhere('address.line_1 LIKE :val')
-                ->orWhere('address.postal_code LIKE :val')
-                ->orWhere('country.name LIKE :val')
-                ->orWhere('state.name LIKE :val')
+            $q->andWhere('c.email LIKE :val'
+                . ' or c.first_name LIKE :val'
+                . ' or c.last_name LIKE :val'
+                . ' or address.line_1 LIKE :val'
+                . ' or address.postal_code LIKE :val'
+                . ' or country.name LIKE :val'
+                . ' or state.name LIKE :val')
                 ->setParameter('val', '%' . $search . '%');
 
         foreach ($orders as $column => $order)
             $q->orderBy($column, $order);
 
+        if ($filters) {
+            $q->andWhere($this->toOrX($q, $filters));
 
+        }
         return $q->getQuery()
             ->getResult();
+    }
+
+    private function toOrX($q, $arr)
+    {
+        $orX = $q->expr()->orX();
+        $i = 0;
+        foreach ($arr as $column => $value) {
+            $orX->add($q->expr()->eq($column, ':val' . $i));
+            $q->setParameter('val' . $i, $value);
+            $i++;
+        }
+        return $orX;
     }
 
 
