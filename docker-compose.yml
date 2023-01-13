@@ -1,19 +1,18 @@
 version: '3.8'
 services:
-    php-apache-environment:
-        container_name: php-apache
+    kiwi-symfony:
+        container_name: kiwi-php-apache
         build:
             context: ./
             dockerfile: Dockerfile
         ports:
             - "7171:80"
-        container_name: wikicollection
         volumes:
             - ./app:/var/www/html
         depends_on:
-            - db
-    db:
-        container_name: db
+            - kiwi-db
+    kiwi-db:
+        container_name: kiwi-db
         image: mysql
         restart: always
         environment:
