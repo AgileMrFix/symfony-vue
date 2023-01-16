@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\AddressRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: AddressRepository::class)]
 #[ORM\Index(['country_id'])]
@@ -120,5 +121,25 @@ class Address
         $this->state = $state;
 
         return $this;
+    }
+
+    #[Groups('customer:index')]
+    public function getAddressString(): string
+    {
+        $address = $this;
+        if (!$address)
+            return '';
+
+        $arr = [
+            $address->getLine2(),
+            $address->getLine1(),
+            $address->getState()->getName(),
+            $address->getCountry()->getName()
+        ];
+
+        //filter empty columns
+        $arr = array_filter($arr, fn($i) => $i);
+
+        return implode(', ', $arr);
     }
 }

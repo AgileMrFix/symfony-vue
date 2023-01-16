@@ -2,30 +2,55 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Serializer\Filter\PropertyFilter;
+use App\Filters\CustomerSearch;
 use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 #[ORM\UniqueConstraint('email_uniq_idx', ['email'])]
+#[ApiResource(
+    operations: [
+        new GetCollection(normalizationContext:['groups' => ['customer:index']], paginationEnabled: true)
+    ]
+
+)]
+#[ApiFilter(OrderFilter::class, properties: ['id', 'first_name', 'last_name', 'email'], arguments: ['orderParameterName' => 'order'])]
+#[ApiFilter(SearchFilter::class, properties: ['address.country.id' => 'exact'])]
+#[ApiFilter(CustomerSearch::class, properties: ['first_name','last_name','email'])]
+
+//#[ApiFilter(SearchFilter::class, properties: ['first_name', 'last_name'])]
 class Customer
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups('customer:index')]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('customer:index')]
     private ?string $first_name = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups('customer:index')]
+
     private ?string $last_name = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups('customer:index')]
     private ?string $email = null;
 
     #[ORM\OneToOne(inversedBy: 'customer', cascade: ['persist', 'remove'])]
+    #[Groups('customer:index')]
     private ?Address $address = null;
 
     #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Phone::class, orphanRemoval: true)]

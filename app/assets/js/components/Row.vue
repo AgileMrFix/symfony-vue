@@ -4,7 +4,7 @@
     <td>{{customer.first_name}}</td>
     <td>{{customer.last_name}}</td>
     <td>{{customer.email}}</td>
-    <td>{{customer.address}}</td>
+    <td>{{customer.address?.addressString}}</td>
   </tr>
 </template>
 

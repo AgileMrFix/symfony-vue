@@ -37,7 +37,7 @@ export default {
   props: {
     customers: [],
     loading: false,
-    config: {},
+    // config: {},
   },
   data() {
     return {
@@ -67,8 +67,7 @@ export default {
 
     },
     updateList(column, order) {
-      let key = this.config.sort[column];
-      this.$emit('update', {[key]: order});
+      this.$emit('update', {[column]: order});
     }
   }
 }

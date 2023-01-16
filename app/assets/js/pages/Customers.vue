@@ -4,12 +4,12 @@
       <div class="col-sm-3 p-3 sidenav">
         <h4>Filters</h4>
 
-        <FilterSide @update="onSearch" :config="config"/>
+        <FilterSide @update="onSearch"/>
       </div>
 
       <div class="col-sm-9 p-3">
         <h4>Customers</h4>
-        <Table @update="onSort" :customers="customers" :loading="loading" :config="config"/>
+        <Table @update="onSort" :customers="customers" :loading="loading"/>
       </div>
     </div>
   </div>
@@ -17,43 +17,19 @@
 
 <script>
 import Table from "../components/Table";
-import axios from "axios"
 import FilterSide from "../components/FilterSide";
+import axiosClient from "../../axios-client";
 
 export default {
   name: "Customers",
   components: {FilterSide, Table},
   data() {
     return {
-      config: {
-        sort: {
-          id: 'c.id',
-          first_name: 'c.first_name',
-          last_name: 'c.last_name',
-          email: 'c.email',
-          value: {}
-        },
-        filters: [
-          {
-            name: 'Filter by Country',
-            type: 'select',
-            key: 'country.name',
-            options: [
-              'Canada',
-              'USA'
-            ],
-            value: null
-          }
-        ],
-        search: {
-          value: ''
-        }
-      }, //todo need config from backend
       customers: [],
       params: {
-        s: null,
-        o: null,
-        f: null,
+        search: null,
+        order: null,
+        ['address.country.id']: null,
       },
       loading: false,
     }
@@ -63,20 +39,19 @@ export default {
   },
   methods: {
     onSearch(params) {
-      this.params.s = params?.s;
-      this.params.f = params?.f;
+      this.params.search = params?.s;
+      this.params['address.country.id'] = params?.f;
       this.getCustomers()
     },
     onSort(params) {
-      this.params.o = params
+      this.params.order = params
       this.getCustomers()
     },
     getCustomers() {
       this.loading = true;
       let params = this.getParamsForQuery();
-      console.log(params)
-      axios
-          .get('/api/customer', {params: params})
+      axiosClient
+          .get('/api/customers', {params: params})
           .then(response => (this.customers = response.data)).finally(() => this.loading = false)
     },
     getParamsForQuery(){

@@ -1,13 +1,11 @@
 <template>
   <div>
-    <div v-for="filter in config.filters" class="d-grid gap-2 my-3">
-      <div v-show="filter.type === 'select'" >
-        <label :for="filter.name" class="form-label">{{ filter.name }}</label>
-        <select v-model="filters[filter.key]" class="form-select" :aria-label="filter.name">
+    <div class="d-grid gap-2 my-3">
+        <label for="country-filter" class="form-label">Filter by Country</label>
+        <select v-model="filter" class="form-select" aria-label="country-filter">
           <option :value="null" selected>Filter...</option>
-          <option v-for="option in filter.options" :value='option'>{{ option }}</option>
+          <option v-for="option in countries" :value='option.id'>{{ option.name }}</option>
         </select>
-      </div>
     </div>
 
     <input v-model="search" type="text" class="form-control mb-3" placeholder="Search">
@@ -19,27 +17,31 @@
 </template>
 
 <script>
+import axiosClient from "../../axios-client";
+
 export default {
   name: "FilterSide",
   props: {
-    config: {}
   },
   data(){
     return {
       search: '',
-      filters: {}
+      filter: null,
+      countries: {}
     }
+  },
+  mounted() {
+    this.getCountries();
   },
   methods: {
     updateList(){
-      console.log(this.getFilterData())
-      this.$emit('update', {s: this.search, f: this.getFilterData()})
+      this.$emit('update', {s: this.search, f: this.filter})
     },
-    getFilterData(){
-      return Object.keys(this.filters)
-          .filter((k) => this.filters[k] != null)
-          .reduce((a, k) => ({ ...a, [k]: this.filters[k] }), {});
-    }
+    getCountries() {
+      axiosClient
+          .get('/api/countries')
+          .then(response => (this.countries = response.data))
+    },
 
   }
 
