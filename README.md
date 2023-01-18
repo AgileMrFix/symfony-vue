@@ -20,7 +20,7 @@
     yarn install 
 
 #### Build the frontend:
-    yarn run prod
+    yarn run build
 
 ### The application is ready to use: 
     http://localhost:7171/
